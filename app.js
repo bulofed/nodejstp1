@@ -2,16 +2,6 @@ const express = require('express')
 const app = express()
 const port = 3000
 
-app.use((req, res, next) => {
-  const currentTime = new Date().toISOString();
-  console.log(`[${currentTime}]: ${req.url}`);
-  next();
-})
-
-app.use((req, res, next) => {
-  res.status(404).send("Cette page n'existe pas!")
-})
-
 const requestCountMiddleware = (req, res, next) => {
   if (!app.locals.requestsCount) {
     app.locals.requestsCount = {};
@@ -24,10 +14,6 @@ const requestCountMiddleware = (req, res, next) => {
 
 app.use(requestCountMiddleware);
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
 app.get('/metrics', (req, res) => {
   const uptimeInSeconds = Math.floor(process.uptime());
 
@@ -39,6 +25,20 @@ app.get('/metrics', (req, res) => {
 
   res.json(metrics);
 });
+
+app.use((req, res, next) => {
+  const currentTime = new Date().toISOString();
+  console.log(`[${currentTime}]: ${req.url}`);
+  next();
+})
+
+app.use((req, res, next) => {
+  res.status(404).send("Cette page n'existe pas!")
+})
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
 
 app.get('/welcome', (req, res) => {
   res.send("Bienvenue sur le TP 1 du cours d'architecture logicielle")
